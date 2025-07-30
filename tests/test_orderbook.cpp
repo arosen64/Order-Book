@@ -27,6 +27,8 @@ void testMultipleOrdersFillBid();
 void testMultipleOrdersFillAsk();
 void testLimitBidCrossesBook();
 void testLimitAskCrossesBook();
+void testRejectZeroQuantity();
+void testRejectNegativeQuantity();
 
 
 int main() {
@@ -74,6 +76,10 @@ int main() {
     std::cout << "testLimitBidCrossesBook passed!" << std::endl;
     testLimitAskCrossesBook();
     std::cout << "testLimitAskCrossesBook passed!" << std::endl;
+    testRejectZeroQuantity();
+    std::cout << "testRejectZeroQuantity passed!" << std::endl;
+    testRejectNegativeQuantity();
+    std::cout << "testRejectNegativeQuantity passed!" << std::endl;
 
     std::cout << "All tests passed!" << std::endl;
     // Your main function implementation here
@@ -494,4 +500,18 @@ void testLimitAskCrossesBook() {
     assert(rpt1.transactionPrices[0].first == 99.0);
     assert(rpt1.transactionPrices[0].second == 3);
     assert(ob.isOrderActive(3) == false); // The limit order should be filled
+}
+
+void testRejectZeroQuantity() {
+    OrderBook ob;
+    Order order(OrderType::LIMIT, Side::BUY, 100.0, 0, 1);
+    FillReport rpt = ob.addOrder(order);
+    assert(rpt.status == OrderResult::REJECTED);
+}
+
+void testRejectNegativeQuantity() {
+    OrderBook ob;
+    Order order(OrderType::LIMIT, Side::BUY, 100.0, -5, 1);
+    FillReport rpt = ob.addOrder(order);
+    assert(rpt.status == OrderResult::REJECTED);
 }
