@@ -3,9 +3,11 @@
 #include <list>
 #include <unordered_map>
 #include <vector>
+#include <tuple>
+#include <cstdint>
 
-using OrderID = uint64_t;
 using Price   = double;
+using OrderID = uint64_t;
 
 enum class Side {BUY, SELL};
 enum class OrderType{LIMIT, MARKET};
@@ -26,7 +28,7 @@ class Order {
 struct FillReport {
     OrderResult status;
     int filledQuantity;
-    std::vector<Price> transactionPrices;
+    std::vector<std::tuple<Price, int, OrderID> > transactionPrices;
 };
 
 struct OrderDetails {
