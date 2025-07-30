@@ -20,14 +20,31 @@ FillReport OrderBook::addOrder(const Order& order) {
 }
 
 bool OrderBook::cancelOrder(OrderID orderId) {
-    auto it = orderMap.find(orderId);
-    if (it != orderMap.end()) {
-        // Remove the order from the orderMap
-        orderMap.erase(it);
-        return true;
+    // 1) look up the order
+    auto mapIt = orderMap.find(orderId);
+    if (mapIt == orderMap.end()) 
+        return false;
+
+    // 2) pick the right book side
+    auto& bookSide = (mapIt->second.side == Side::BUY) ? bids : asks;
+    auto  price    = mapIt->second.price;
+
+    // 3) find the list at that price
+    auto lvlIt = bookSide.find(price);
+    if (lvlIt != bookSide.end()) {
+        // erase the node via the stored list‐iterator
+        lvlIt->second.erase(mapIt->second.it);
+
+        // if empty, remove that price level
+        if (lvlIt->second.empty())
+            bookSide.erase(lvlIt);
     }
-    return false;
+
+    // 4) finally remove from the orderMap
+    orderMap.erase(mapIt);
+    return true;
 }
+
 
 // assumes that the order book is not empty
 void OrderBook::matchOrders(const Order& order) {
