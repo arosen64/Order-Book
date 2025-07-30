@@ -6,6 +6,7 @@
 #include <tuple>
 #include <cstdint>
 
+
 using Price   = double;
 using OrderID = uint64_t;
 
@@ -28,7 +29,7 @@ class Order {
 struct FillReport {
     OrderResult status;
     int filledQuantity;
-    std::vector<std::tuple<Price, int, OrderID> > transactionPrices;
+    std::vector<std::pair<Price, int> > transactionPrices; // List of prices and quantities for orders
 };
 
 struct OrderDetails {
@@ -42,6 +43,9 @@ class OrderBook {
         FillReport addOrder(const Order& order);
         bool cancelOrder(OrderID orderId);
         // TODO add - bool modifyOrder(int orderId, const Order& newOrder);
+        bool isOrderActive(OrderID orderId) const {
+            return orderMap.find(orderId) != orderMap.end();
+        }
     
         private:
             // Helper function to match orders
