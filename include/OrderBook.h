@@ -26,7 +26,11 @@ class Order {
         OrderID orderId; // Unique identifier for the order
 };
 
-struct FillReport {
+class FillReport {
+    public:
+        FillReport(OrderResult status, int filledQuantity, std::vector<std::pair<Price, int> > transactionPrices) 
+            : status(status), filledQuantity(filledQuantity), transactionPrices(transactionPrices) {}
+        
     OrderResult status;
     int filledQuantity;
     std::vector<std::pair<Price, int> > transactionPrices; // List of prices and quantities for orders
@@ -49,7 +53,7 @@ class OrderBook {
     
         private:
             // Helper function to match orders
-            void matchOrders();
+            void matchOrders(const Order& order);
 
             std::map<Price, std::list<Order> > bids; // key: price, value: linked-list of orders
             std::map<Price, std::list<Order> > asks; // key: price, value: linked-list of orders
