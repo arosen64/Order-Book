@@ -199,3 +199,31 @@ FillReport OrderBook::handleFillSellOrder(Order& order, std::map<Price, std::lis
     }
     return deets;
 }
+
+void OrderBook::printOrderBook() const {
+    std::cout << "\n--- Top 5 Bids ---\n";
+    int count = 0;
+    for (auto it = bids.begin(); it != bids.end() && count < 5; ++it) {
+        for (const auto& order : it->second) {
+            std::cout << "Price: " << it->first
+                      << " | Qty: " << order.quantity
+                      << " | ID: " << order.orderId << '\n';
+            if (++count >= 5) break;
+        }
+        if (count >= 5) break;
+    }
+    if (count == 0) std::cout << "(none)\n";
+
+    std::cout << "--- Top 5 Asks ---\n";
+    count = 0;
+    for (auto it = asks.begin(); it != asks.end() && count < 5; ++it) {
+        for (const auto& order : it->second) {
+            std::cout << "Price: " << it->first
+                      << " | Qty: " << order.quantity
+                      << " | ID: " << order.orderId << '\n';
+            if (++count >= 5) break;
+        }
+        if (count >= 5) break;
+    }
+    if (count == 0) std::cout << "(none)\n";
+}

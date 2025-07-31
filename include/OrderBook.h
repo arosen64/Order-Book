@@ -5,14 +5,15 @@
 #include <vector>
 #include <tuple>
 #include <cstdint>
+#include <iostream>
 
 
 using Price   = double;
 using OrderID = uint64_t;
 
-enum class Side {BUY, SELL};
-enum class OrderType{LIMIT, MARKET};
-enum class OrderResult {FILLED, PARTIALLY_FILLED, REJECTED, RESTED};
+enum Side {BUY, SELL};
+enum OrderType{LIMIT, MARKET};
+enum OrderResult {FILLED, PARTIALLY_FILLED, REJECTED, RESTED};
 
 class Order {
     public:
@@ -50,6 +51,11 @@ class OrderBook {
         bool isOrderActive(OrderID orderId) const {
             return orderMap.find(orderId) != orderMap.end();
         }
+
+        void printOrderBook() const; // Function to print the order book for debugging
+        
+
+
     
         private:
             // Helper function to handle market and limit orders
