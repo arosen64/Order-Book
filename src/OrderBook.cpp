@@ -11,7 +11,8 @@ FillReport OrderBook::handleLimitOrder(Order& order) {
     }
 
     // if there is an appealing ask for this bid
-    if ((order.side == Side::BUY) && !asks.empty() && (order.price <= asks.begin()->first)) {
+
+    if ((order.side == Side::BUY) && !asks.empty() && (order.price >= asks.begin()->first)) {
         auto it = asks.begin();
         deets = handleFillBuyOrder(order, it);
         if (deets.status == OrderResult::FILLED) {
@@ -32,7 +33,7 @@ FillReport OrderBook::handleLimitOrder(Order& order) {
         std::vector<std::pair<Price, int> >());
 
     // if there is an appealing bid for this ask
-    if (order.side == Side::SELL && !bids.empty() && order.price >= bids.rbegin()->first) {
+    if ((order.side == Side::SELL) && !bids.empty() && (order.price <= bids.begin()->first)) {
         auto it = bids.begin();
         deets = handleFillSellOrder(order, it);
         if (deets.status == OrderResult::FILLED) {

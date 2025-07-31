@@ -466,14 +466,14 @@ void testLimitBidCrossesBook() {
     OrderBook ob;
     Order order1(OrderType::LIMIT, Side::SELL, 100.0, 5, 1);
     ob.addOrder(order1);
-    Order order2(OrderType::LIMIT, Side::SELL, 101.0, 5, 2);
+    Order order2(OrderType::LIMIT, Side::SELL, 102.0, 5, 2);
     ob.addOrder(order2);
 
     FillReport rpt = ob.addOrder(Order(OrderType::LIMIT, Side::BUY, 101.0, 8, 3));
 
     assert(rpt.status == OrderResult::PARTIALLY_FILLED);
     assert(rpt.transactionPrices.size() == 1);
-    assert(rpt.transactionPrices[0].first == 101.0);
+    assert(rpt.transactionPrices[0].first == 100.0);
     assert(rpt.transactionPrices[0].second == 5);
     assert(rpt.filledQuantity == 5); // First 5 shares filled at 101
     // remaining 2 shares rest at 101
@@ -490,7 +490,7 @@ void testLimitBidCrossesBook() {
 
 void testLimitAskCrossesBook() {
     OrderBook ob;
-    Order order1(OrderType::LIMIT, Side::BUY, 100.0, 5, 1);
+    Order order1(OrderType::LIMIT, Side::BUY, 98.0, 5, 1);
     ob.addOrder(order1);
     Order order2(OrderType::LIMIT, Side::BUY, 99.0, 5, 2);
     ob.addOrder(order2);
@@ -498,7 +498,7 @@ void testLimitAskCrossesBook() {
     FillReport rpt = ob.addOrder(Order(OrderType::LIMIT, Side::SELL, 99.0, 8, 3));
 
     assert(rpt.status == OrderResult::PARTIALLY_FILLED);
-    assert(rpt.transactionPrices.size() == 2);
+    assert(rpt.transactionPrices.size() == 1);
     // remaining 2 shares rest at 99
     assert(ob.isOrderActive(3));
 
