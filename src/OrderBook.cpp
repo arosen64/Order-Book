@@ -1,41 +1,59 @@
 #include "../include/OrderBook.h"
 
+// assumes that this is a limit order
+FillReport OrderBook::handleLimitOrder(Order& order) {
+    if (order.quantity <= 0) {
+        return FillReport(OrderResult::REJECTED, 0, std::vector<std::pair<Price, int> >());
+    }
+
+    if (order.side == Side::BUY && asks.empty()) {
+        bids[order.price].push_back(order);
+        OrderDetails details = {order.side, order.price, --bids[order.price].end()};
+        orderMap[order.orderId] = details;
+        return FillReport(OrderResult::RESTED, 0, std::vector<std::pair<Price, int> >());
+    }
+
+    if (order.side == Side::SELL && bids.empty()) {
+        asks[order.price].push_back(order);
+        OrderDetails details = {order.side, order.price, --asks[order.price].end()};
+        orderMap[order.orderId] = details;
+        return FillReport(OrderResult::RESTED, 0, std::vector<std::pair<Price, int> >());
+    }
+
+    return FillReport(OrderResult::REJECTED, 0, std::vector<std::pair<Price, int> >());
+}
+
+// assumes that this is a market order
+FillReport OrderBook::handleMarketOrder(Order& order) {
+    if (order.side == Side::BUY && asks.empty()) {
+        return FillReport(OrderResult::REJECTED, 0, std::vector<std::pair<Price, int> >());
+    }
+    
+    if (order.side == Side::SELL && bids.empty()) {
+        return FillReport(OrderResult::REJECTED, 0, std::vector<std::pair<Price, int> >());
+    }
+}
+
 FillReport OrderBook::addOrder(const Order& order) {
 
     // initializing the storage of the juicy deets (start out as bad deets)
     FillReport deets = FillReport(OrderResult::REJECTED, 0, std::vector<std::pair<Price, int> >());
+
+    // make a copy of the order to store in the book if needed
+    Order orderCopy(order);
 
     
     // Check for valid order quantity
     if (order.quantity < 0) {
         return deets;
     }
-    if (order.type == OrderType::LIMIT && order.quantity == 0) {
-        return deets;
+
+    if (order.type == OrderType::LIMIT) {
+        return handleLimitOrder(orderCopy);
     }
 
-    // Check if the order is already active
-    if (isOrderActive(order.orderId)) {
-        return deets;
-    }
-
-    // Getting the right book side
-    std::map<Price, std::list<Order> > book = (order.side == Side::BUY) ? asks : bids;
-
-    // make a copy of the order to store in the book if needed
-    Order orderCopy(order);
-
-
-    // attempt to match the order immediately
-    if (!book.empty()) {
-        // TODO: Implement the logic to match orders based on the order type and side
-    // if this side of the book is empty, we reject the market order
-    } else if (order.type == OrderType::MARKET) {
-        return deets;
-    }
-
-    return FillReport(OrderResult::RESTED, 0, std::vector<std::pair<Price, int> >());
-
+    // in all other cases treat it as a market order
+    return handleMarketOrder(orderCopy);
 }
 
 bool OrderBook::cancelOrder(OrderID orderId) {
@@ -62,11 +80,4 @@ bool OrderBook::cancelOrder(OrderID orderId) {
     // 4) finally remove from the orderMap
     orderMap.erase(mapIt);
     return true;
-}
-
-
-// assumes that the order book is not empty and 
-void OrderBook::matchOrders(const Order& order) {
-    // TODO: Implement the logic to match orders based on the order type and side
-
 }

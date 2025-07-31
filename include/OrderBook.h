@@ -52,8 +52,9 @@ class OrderBook {
         }
     
         private:
-            // Helper function to match orders
-            void matchOrders(const Order& order);
+            // Helper function to handle market and limit orders
+            FillReport handleMarketOrder(Order& order);
+            FillReport handleLimitOrder(Order& order);
 
             std::map<Price, std::list<Order> > bids; // key: price, value: linked-list of orders
             std::map<Price, std::list<Order> > asks; // key: price, value: linked-list of orders

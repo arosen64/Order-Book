@@ -36,7 +36,6 @@ void testCancelBid();
 int main() {
     testAddLimitBidOrder();
     std::cout << "testAddLimitBidOrder passed!" << std::endl;
-    std::cout << "testAddLimitBidOrder passed!" << std::endl;
     testAddLimitAskOrder();
     std::cout << "testAddLimitAskOrder passed!" << std::endl;
     testMarketEmptyBookBid();
