@@ -55,8 +55,12 @@ class OrderBook {
             // Helper function to handle market and limit orders
             FillReport handleMarketOrder(Order& order);
             FillReport handleLimitOrder(Order& order);
+        
+            // the inputted iterators should start at the proper price level for the order type
+            FillReport handleFillBuyOrder(Order& order, std::map<Price, std::list<Order> >::iterator& it);
+            FillReport handleFillSellOrder(Order& order,std::map<Price, std::list<Order>, std::greater<Price> >::iterator& it);
 
-            std::map<Price, std::list<Order> > bids; // key: price, value: linked-list of orders
+            std::map<Price, std::list<Order>, std::greater<Price> > bids; // key: price, value: linked-list of orders
             std::map<Price, std::list<Order> > asks; // key: price, value: linked-list of orders
             std::unordered_map<OrderID, OrderDetails> orderMap; // key: orderId, value: Order
 

@@ -244,7 +244,7 @@ void testBidFillsAtDifferentPrices() {
     FillReport report = orderBook.addOrder(order3);
     
     // Check if the market order was filled at both prices
-    assert(report.status == OrderResult::PARTIALLY_FILLED);
+    assert(report.status == OrderResult::FILLED);
     assert(report.filledQuantity == 10);
     assert(report.transactionPrices.size() == 2);
     assert(report.transactionPrices[0].first == 100.0);
@@ -265,7 +265,7 @@ void testAskFillsAtDifferentPrices() {
     FillReport report = orderBook.addOrder(order3);
     
     // Check if the market order was filled at both prices
-    assert(report.status == OrderResult::PARTIALLY_FILLED);
+    assert(report.status == OrderResult::FILLED);
     assert(report.filledQuantity == 10);
     assert(report.transactionPrices.size() == 2);
     assert(report.transactionPrices[0].first == 100.0);
@@ -387,7 +387,7 @@ void bidMaintainsTimeOrder() {
     
     // Check if the market order was filled at the correct price
     assert(report.status == OrderResult::FILLED);
-    assert(report.filledQuantity == 10);
+    assert(report.filledQuantity == 5);
     assert(report.transactionPrices.size() == 1);
     assert(report.transactionPrices[0].first == 100.0); // Should fill at the best bid price
     assert(report.transactionPrices[0].second == 5); // First order filled
@@ -408,7 +408,7 @@ void askMaintainsTimeOrder() {
     
     // Check if the market order was filled at the correct price
     assert(report.status == OrderResult::FILLED);
-    assert(report.filledQuantity == 10);
+    assert(report.filledQuantity == 5);
     assert(report.transactionPrices.size() == 1);
     assert(report.transactionPrices[0].first == 100.0); // Should fill at the best ask price
     assert(report.transactionPrices[0].second == 5); // First order filled
@@ -472,7 +472,10 @@ void testLimitBidCrossesBook() {
     FillReport rpt = ob.addOrder(Order(OrderType::LIMIT, Side::BUY, 101.0, 8, 3));
 
     assert(rpt.status == OrderResult::PARTIALLY_FILLED);
-    assert(rpt.transactionPrices.size() == 2);
+    assert(rpt.transactionPrices.size() == 1);
+    assert(rpt.transactionPrices[0].first == 101.0);
+    assert(rpt.transactionPrices[0].second == 5);
+    assert(rpt.filledQuantity == 5); // First 5 shares filled at 101
     // remaining 2 shares rest at 101
     assert(ob.isOrderActive(3));
 
