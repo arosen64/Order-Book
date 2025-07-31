@@ -29,10 +29,13 @@ void testLimitBidCrossesBook();
 void testLimitAskCrossesBook();
 void testRejectZeroQuantity();
 void testRejectNegativeQuantity();
+void testCancelAsk();
+void testCancelBid();
 
 
 int main() {
     testAddLimitBidOrder();
+    std::cout << "testAddLimitBidOrder passed!" << std::endl;
     std::cout << "testAddLimitBidOrder passed!" << std::endl;
     testAddLimitAskOrder();
     std::cout << "testAddLimitAskOrder passed!" << std::endl;
@@ -80,6 +83,10 @@ int main() {
     std::cout << "testRejectZeroQuantity passed!" << std::endl;
     testRejectNegativeQuantity();
     std::cout << "testRejectNegativeQuantity passed!" << std::endl;
+    testCancelAsk();
+    std::cout << "testCancelAsk passed!" << std::endl;
+    testCancelBid();
+    std::cout << "testCancelBid passed!" << std::endl;
 
     std::cout << "All tests passed!" << std::endl;
     // Your main function implementation here
@@ -514,4 +521,34 @@ void testRejectNegativeQuantity() {
     Order order(OrderType::LIMIT, Side::BUY, 100.0, -5, 1);
     FillReport rpt = ob.addOrder(order);
     assert(rpt.status == OrderResult::REJECTED);
+}
+
+void testCancelBid() {
+    OrderBook ob;
+    Order order(OrderType::LIMIT, Side::BUY, 100.0, 10, 1);
+    ob.addOrder(order);
+    
+    // Cancel the order
+    bool result = ob.cancelOrder(1);
+    
+    // Check if the order was cancelled successfully
+    assert(result == true);
+    
+    // Check if the order is no longer active
+    assert(ob.isOrderActive(1) == false);
+}
+
+void testCancelAsk() {
+    OrderBook ob;
+    Order order(OrderType::LIMIT, Side::SELL, 100.0, 10, 1);
+    ob.addOrder(order);
+    
+    // Cancel the order
+    bool result = ob.cancelOrder(1);
+    
+    // Check if the order was cancelled successfully
+    assert(result == true);
+    
+    // Check if the order is no longer active
+    assert(ob.isOrderActive(1) == false);
 }
